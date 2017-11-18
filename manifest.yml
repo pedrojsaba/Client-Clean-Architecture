@@ -1,0 +1,7 @@
+---
+applications:
+- name: banking-unmsm
+  memory: 128MB
+  instances: 2
+  env:
+    PHP_INI_SCAN_DIR: .bp-config/php/conf.d

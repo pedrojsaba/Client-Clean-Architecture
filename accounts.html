@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            getAccounts();
+
+        });
+
+        function getAccounts() {
+            $.ajax({
+                url: Config.Service + 'api/BankAccount/GetAccounts',
+                method: "get",
+                headers: { "Authorization": "Bearer " + sessionStorage.getItem('accessToken') },
+                contentType: "application/json",
+                success: function (response) {
+                    $("#accountFrom").html('');
+                    $.each(response, function (key, item) {
+                        $("#accountFrom").append('<option value="' + item.number + '">' + formatItem(item) + '</option>');
+                    });
+                    console.log(response);
+                },
+                error: function (e) {
+                    if (e.status === 401) {
+                        alert(Config.NotAuthorized);
+                        window.location.replace(Config.BaseUrl + 'Login.html');
+                    }
+                }
+            });
+        }
+
+
+        function formatItem(item) {
+            return item.number + ' ( S/. ' + item.balance + ' )';
+        }
+
+        function find() {
+            var number = $('#accountTo').val();
+
+            $.ajax({
+                url: Config.Service + 'api/PerformTransfer/AccountEnabled/' + number,
+                method: "get",
+                headers: { "Authorization": "Bearer " + sessionStorage.getItem('accessToken') },
+                contentType: "application/json",
+                success: function (response) {
+                    $('#product').text(response ? 'Cuenta válida' : 'Cuenta no válida');
+                },
+                error: function (e) {
+                    if (e.status === 401) {
+                        alert(Config.NotAuthorized);
+                        window.location.replace(Config.BaseUrl + 'Login.html');
+                    }
+                }
+            });
+        }
+
+        function Transfer() {
+
+            var accountFrom = $('#accountFrom').val();
+            var accountTo = $('#accountTo').val();
+            var amount = $('#amount').val();
+
+            var uriTransfer = Config.Service + 'api/PerformTransfer/' + accountFrom + '/' + accountTo + '/' + amount;
+
+            $.ajax({
+                url: uriTransfer,
+                method: "get",
+                headers: { "Authorization": "Bearer " + sessionStorage.getItem('accessToken') },
+                contentType: "application/json",
+                success: function (response) {
+                    if (response.status === 'OK') {
+                        alert(Config.TransferOk);
+                        window.location.replace(Config.BaseUrl);
+                    }
+                    else {
+                        alert(response.message);
+                    }
+                },
+                error: function (e) {
+                    if (e.status === 401) {
+                        alert(Config.NotAuthorized);
+                        window.location.replace(Config.BaseUrl + 'Login.html');
+                    } else {
+                        alert(JSON.stringify(e));
+                    }
+                }
+            });
+        }
+
+
+
+
+    </script>
+
+</head>
+<body>
+
+    <div>
+
+        <div class="portlet light">
+            <div class="portlet-title tabbable-line">
+                <div class="caption caption-md">
+                    <i class="icon-globe theme-font hide"></i>
+                    <div class="profile-usertitle-name">
+                        <span id="spanHeaderCuenta" class="caption-subject font-blue-madison bold uppercase">Cuenta del Perfil </span>
+
+
+                    </div>
+
+                    <br />
+                </div>
+                <ul class="nav nav-tabs">
+
+                    <li>
+                        <div class="profile-usertitle-name">
+                            <p id="NumeroCuenta" />
+
+                        </div>
+
+                    </li>
+
+
+                </ul>
+            </div>
+            <div class="portlet light bordered">
+
+
+
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="accountFrom" class="col-md-2 control-label">N° Cuenta Origen</label>
+
+                        <div class="col-md-4">
+                            <select class="form-control" id="accountFrom">
+                                <option value="">-- Sin Cuentas --</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="accountTo" class="col-md-2 control-label">N° Cuenta Destino</label>
+
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="accountTo" autocomplete="off" placeholder="N° Cuenta destino" />
+                        </div>
+
+                    </div>
+                    <div class="form-group" style="margin-top:-15px;">
+                        <div class="col-md-offset-2 col-md-4">
+                            <div class="checkbox">
+                                <span id="product" class="help-block" style="color:#AF4442;">Cuenta a la que transferiremos el dinero.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:-15px;">
+                        <label class="col-md-2 control-label"></label>
+                        <div class="col-md-4">
+                            <span class="input-group-btn btn-left">
+                                <button class="btn red-intense" type="button" onclick="find();">Verificar</button>
+                            </span>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="amount" class="col-md-2 control-label">Monto (S/.)</label>
+                        <div class="col-md-4">
+                            <input type="number" class="form-control" id="amount" placeholder="Monto a transferir" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-4">
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="button" class="btn blue" onclick="Transfer();">Transferir</button>
+                        </div>
+                    </div>
+
+
+                </form>
+
+
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

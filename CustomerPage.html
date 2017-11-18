@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title></title>
+
+
+
+    <!-- BEGIN PAGE LEVEL STYLES -->
+    <link href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css" rel="stylesheet" type="text/css" />
+    <link href="assets/admin/pages/css/profile.css" rel="stylesheet" type="text/css" />
+    <link href="assets/admin/pages/css/tasks.css" rel="stylesheet" type="text/css" />
+    <!-- END PAGE LEVEL STYLES -->
+    <!-- BEGIN PAGE LEVEL STYLES -->
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var uri = 'api/Operation';
+            var id = $('#spanCustomer').text();
+
+            $.getJSON(uri + '/' + id)
+                .done(function (data) {
+                    $.each(data, function (key, item) {
+                        $('#CompleteName').text(item.FirstName + " " + item.LastName);
+                        $('#Email').text(item.Email);
+                    });
+                    //$('#product').text(formatItem(data));
+
+                });
+
+            var uriAccounts = 'api/BankAccount/GetAccounts?id=' + id;
+            $.getJSON(uriAccounts)
+           .done(function (data) {
+               // On success, 'data' contains a list of products.
+               $.each(data, function (key, item) {
+                   // Add a list item for the product.
+                   $("#myAccounts").append("  <li><a id=" + item.Id + "> <i class='icon-briefcase'></i>" + item.Number + " <div class='profile-usertitle-job'><p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Saldo: S/." + item.Balance + "<p /></div> </a></li>");
+
+
+               });
+
+
+               var ul = document.getElementById('myAccounts');
+               ul.onclick = function (event) {
+
+                   $("#dvSubMenusResults").load('accounts.html');
+                   $("#spanCuenta").text(event.target.id);
+               };
+
+           });
+
+
+        });
+
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="row">
+
+        <div class="portlet light bordered">
+
+
+            <div class="portlet-body">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- BEGIN PROFILE SIDEBAR -->
+                        <div class="profile-sidebar" style="width:250px;margin-bottom:-10px;margin-left:-20px;">
+                            <!-- PORTLET MAIN -->
+                            <div class="portlet light profile-sidebar-portlet">
+                                <!-- SIDEBAR USERPIC -->
+
+                                <div class="profile-userpic">
+
+                                    <img src="../Images/Unknown-user (2).png" class="img-responsive" alt="" />
+
+                                </div>
+
+                                <!-- END SIDEBAR USERPIC -->
+                                <!-- SIDEBAR USER TITLE -->
+                                <div class="profile-usertitle">
+                                    <div class="profile-usertitle-name">
+                                        <p id="CompleteName" />
+                                    </div>
+
+                                    <div class="profile-usertitle-job">
+                                        <p id="Email" />
+                                        <span id="spanCuenta" class="profile-desc-text" style="visibility:hidden;">  </span>
+                                    </div>
+
+
+                                </div>
+                                <!-- END SIDEBAR USER TITLE -->
+                                <!-- SIDEBAR BUTTONS -->
+                                <div class="profile-userbuttons">
+
+                                </div>
+                                <!-- END SIDEBAR BUTTONS -->
+                                <!-- SIDEBAR MENU -->
+                                <div class="profile-usermenu">
+                                    <ul id="myAccounts" class="nav">
+                                        <li class="active">
+                                            <a href="#">
+                                                <i class="icon-home"></i>
+                                                Mis Cuentas
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                                <!-- END MENU -->
+                            </div>
+                            <!-- END PORTLET MAIN -->
+
+                        </div>
+                        <!-- END BEGIN PROFILE SIDEBAR -->
+                        <!-- BEGIN PROFILE CONTENT -->
+
+                        <div id="dvSubMenusResults" class="profile-content">
+
+
+
+                        </div>
+                        <!-- END PROFILE CONTENT -->
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>

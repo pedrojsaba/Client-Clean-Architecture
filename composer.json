@@ -1,0 +1,25 @@
+{
+    "name": "banking",
+    "description": "Banking",
+    "keywords": ["cloud", "rest"],
+    "homepage": "https://github.com/pedrojsaba",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pedro J. Saba",
+            "email": "pedrojsaba@gmail.com",
+            "homepage": "https://github.com/pedrojsaba"
+        }
+    ],
+    "require": {
+        "php": ">=7"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "index.html"
+        }
+    },
+    "config": {
+        "process-timeout" : 0
+    }
+}
