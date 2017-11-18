@@ -11,6 +11,9 @@
 
             getAccounts();
 
+            $('#Transfer').click(function() {
+                Transfer();
+            });
         });
 
         function getAccounts() {
@@ -61,36 +64,56 @@
         }
 
         function Transfer() {
-
+            
             var accountFrom = $('#accountFrom').val();
             var accountTo = $('#accountTo').val();
             var amount = $('#amount').val();
 
-            var uriTransfer = Config.Service + 'api/PerformTransfer/' + accountFrom + '/' + accountTo + '/' + amount;
-
-            $.ajax({
-                url: uriTransfer,
-                method: "get",
-                headers: { "Authorization": "Bearer " + sessionStorage.getItem('accessToken') },
-                contentType: "application/json",
-                success: function (response) {
-                    if (response.status === 'OK') {
-                        alert(Config.TransferOk);
-                        window.location.replace(Config.BaseUrl);
-                    }
-                    else {
-                        alert(response.message);
-                    }
-                },
-                error: function (e) {
-                    if (e.status === 401) {
-                        alert(Config.NotAuthorized);
-                        window.location.replace(Config.BaseUrl + 'Login.html');
-                    } else {
-                        alert(JSON.stringify(e));
-                    }
+            var errors = 0;
+            $('.form-control').each(function () {
+                $(this).removeClass('error-input');
+                if ($(this).val() === '') {
+                    alert('emp');
+                    $(this).addClass('error-input');
+                    if (errors === 0) $(this).focus();
+                    errors++;
                 }
             });
+
+            $('.form-control[type="number"]').each(function () {
+                $(this).removeClass('error-format');
+                if ((!$.isNumeric($(this).val())) || (parseInt($(this).val()) <= 0)) {                    
+                    $(this).addClass('error-format');                    
+                    if (errors === 0) $(this).focus();
+                    errors++;
+                }
+            });            
+            if (errors === 0) {
+                var uriTransfer = Config.Service + 'api/PerformTransfer/' + accountFrom + '/' + accountTo + '/' + amount;
+
+                $.ajax({
+                    url: uriTransfer,
+                    method: "get",
+                    headers: { "Authorization": "Bearer " + sessionStorage.getItem('accessToken') },
+                    contentType: "application/json",
+                    success: function (response) {
+                        if (response.status === 'OK') {
+                            alert(Config.TransferOk);
+                            window.location.replace(Config.BaseUrl);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (e) {
+                        if (e.status === 401) {
+                            alert(Config.NotAuthorized);
+                            window.location.replace(Config.BaseUrl + 'Login.html');
+                        } else {
+                            alert(JSON.stringify(e));
+                        }
+                    }
+                });
+            }
         }
 
 
@@ -170,7 +193,7 @@
                     <div class="form-group">
                         <label for="amount" class="col-md-2 control-label">Monto (S/.)</label>
                         <div class="col-md-4">
-                            <input type="number" class="form-control" id="amount" placeholder="Monto a transferir" />
+                            <input type="number" min="0"  class="form-control" id="amount" placeholder="Monto a transferir" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -180,7 +203,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <button type="button" class="btn blue" onclick="Transfer();">Transferir</button>
+                            <button id="Transfer" type="button" class="btn blue" >Transferir</button>
                         </div>
                     </div>
 

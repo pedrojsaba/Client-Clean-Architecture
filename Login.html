@@ -26,6 +26,7 @@
     <link href="assets/admin/layout/css/layout.css" rel="stylesheet" type="text/css" />
     <link href="assets/admin/layout/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
     <link href="assets/admin/layout/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="assets/global/css/validation.css" rel="stylesheet" type="text/css" />
     <!-- END THEME STYLES -->
     <link rel="shortcut icon" href="favicon.ico" />
 </head>
@@ -76,7 +77,7 @@
                         <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
                         <i class="fa fa-user"></i>
 
-                        <input class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="off" placeholder="Username" id="username" name="username" />
+                        <input class="form-control form-control-solid placeholder-no-fix" required type="text" autocomplete="off" placeholder="Username" id="username" name="username" />
 
                     </div>
                     <span class="help-block" style="color:#AF4442;">
@@ -87,7 +88,7 @@
                 <div class="form-group">
                     <div class="input-icon">
                         <i class="fa fa-lock"></i>
-                        <input class="form-control form-control-solid placeholder-no-fix" type="password" autocomplete="off" placeholder="Password" id="password" name="password" />
+                        <input class="form-control form-control-solid placeholder-no-fix" required type="password" autocomplete="off" placeholder="Password" id="password" name="password" />
 
 
 
@@ -132,8 +133,19 @@
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
     <script>
         var _token;
-        $("#btnGetToken").on("click", function () {
-            getToken();
+        $("#btnGetToken").on("click", function (e) {
+            var errors = 0;
+            
+            $('.form-control').each(function () {                
+                $(this).removeClass('error-input');
+                if ($(this).val() === '') {
+                    $(this).addClass('error-input');
+                    if (errors === 0) $(this).focus();
+                    errors++;
+                }
+            });            
+            if (errors === 0)
+                getToken();
         });
 
         function getToken() {
